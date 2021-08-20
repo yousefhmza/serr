@@ -38,11 +38,11 @@ class _LandingScreenState extends State<LandingScreen> {
   void initState() {
     _getPublicMessages = Future.delayed(Duration.zero).then((value) {
       BlocProvider.of<HomeCubit>(context).getPublicMessages(widget.id!);
-      BlocProvider.of<HomeCubit>(context).getSearchedUserData(
-        searchedId: widget.id!,
-        searchedName: widget.name!,
-      );
     });
+    BlocProvider.of<HomeCubit>(context).getSearchedUserData(
+      searchedId: widget.id!,
+      searchedName: widget.name!,
+    );
     super.initState();
   }
 
@@ -89,30 +89,43 @@ class _LandingScreenState extends State<LandingScreen> {
                     SizedBox(
                       height: deviceHeight * 0.05,
                     ),
-                    Column(
-                      children: [
-                        CircleAvatar(
-                          radius: deviceHeight * 0.12,
-                          backgroundColor: Theme.of(context).canvasColor,
-                          backgroundImage: cubit.searchedUserImg == null
-                              ? null
-                              : NetworkImage(cubit.searchedUserImg!),
-                        ),
-                        SizedBox(
-                          height: deviceHeight * 0.05,
-                        ),
-                        Text(
-                          widget.name!.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 26.0.sp,
-                            fontFamily: 'Gotham_black',
-                            color: Theme.of(context).textTheme.bodyText1!.color,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    CircleAvatar(
+                      radius: deviceHeight * 0.12,
+                      backgroundColor: Theme.of(context).canvasColor,
+                      backgroundImage: cubit.searchedUserImg == null
+                          ? null
+                          : NetworkImage(cubit.searchedUserImg!),
+                    ),
+                    SizedBox(
+                      height: deviceHeight * 0.05,
+                    ),
+                    Text(
+                      widget.name!.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 24.0.sp,
+                        fontFamily: 'Gotham_black',
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: deviceHeight * 0.02,
+                    ),
+                    Text(
+                      cubit.searchedUserImg == null
+                          ? ''
+                          : cubit.searchedUsername!,
+                      style: TextStyle(
+                        fontSize: 14.0.sp,
+                        fontFamily: 'Arabic',
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
                     ),
                     SizedBox(
                       height: deviceHeight * 0.05,

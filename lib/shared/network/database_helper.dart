@@ -29,6 +29,7 @@ class DatabaseHelper {
     CREATE TABLE userdata (
     id INTEGER PRIMARY KEY,
     name TEXT,
+    username TEXT,
     userId TEXT,
     email TEXT,
     img TEXT,

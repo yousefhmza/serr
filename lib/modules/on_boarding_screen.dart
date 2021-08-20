@@ -186,7 +186,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   void afterBoarding(BuildContext context) {
     CacheHelper.saveData('onBoardingSeen', true).then(
-          (value) {
+      (value) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (ctx) => AuthScreen(),
@@ -197,14 +197,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Widget onBoardingItem(
-      BuildContext context,
-      BoardModel board,
-      double deviceHeight,
-      ) =>
+    BuildContext context,
+    BoardModel board,
+    double deviceHeight,
+  ) =>
       Column(
         children: [
           Image(
             image: AssetImage(board.image!),
+            height: deviceHeight * 0.5,
             fit: BoxFit.cover,
           ),
           SizedBox(height: deviceHeight * 0.04),

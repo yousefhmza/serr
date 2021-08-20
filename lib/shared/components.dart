@@ -52,7 +52,7 @@ SliverAppBar sliverAppBar(
   double deviceWidth = MediaQuery.of(context).size.width;
   HomeCubit cubit = BlocProvider.of<HomeCubit>(context, listen: true);
   return SliverAppBar(
-    expandedHeight: deviceHeight * 0.138,
+    expandedHeight: deviceHeight * 0.148,
     pinned: true,
     floating: true,
     title: Row(
@@ -184,6 +184,7 @@ Widget defaultTextField(
       child: Card(
         elevation: 2.0.sp,
         shadowColor: Colors.black54,
+        color: Colors.transparent,
         shape: OutlineInputBorder(
           borderSide: BorderSide(
             style: BorderStyle.none,
@@ -221,7 +222,11 @@ Widget defaultTextField(
               borderRadius: BorderRadius.circular(100.0.r),
             ),
             filled: true,
-            fillColor: Colors.grey.withOpacity(0.2),
+            fillColor:
+                BlocProvider.of<ThemeCubit>(context, listen: true).themeMode ==
+                        ThemeMode.light
+                    ? Colors.grey.shade200
+                    : Colors.grey.shade800,
             hintText: hintText,
             hintStyle: TextStyle(
               height: 1.2.h,

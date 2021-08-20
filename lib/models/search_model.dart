@@ -13,11 +13,13 @@ class SearchModel {
 class Result {
   String? id;
   String? name;
+  String? username;
   String? img;
 
   Result.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
     name = json['name'];
+    username = json['username'];
     img = json['img'];
   }
 }

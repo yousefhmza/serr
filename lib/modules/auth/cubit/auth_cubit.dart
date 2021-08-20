@@ -43,6 +43,7 @@ class AuthCubit extends Cubit<AuthStates> {
           .insertData(
         UserModel(
           name: value.data['name'],
+          username: value.data['username'],
           userId: value.data['userId'],
           email: value.data['email'],
           img: value.data['img'],
@@ -82,6 +83,7 @@ class AuthCubit extends Cubit<AuthStates> {
           .insertData(
         UserModel(
           name: value.data['name'],
+          username: value.data['username'],
           userId: value.data['userId'],
           email: value.data['email'],
           img: value.data['img'],
@@ -122,6 +124,7 @@ class AuthCubit extends Cubit<AuthStates> {
           .insertData(
         UserModel(
           name: value.data['name'],
+          username: value.data['username'],
           userId: value.data['userId'],
           email: value.data['email'],
           img: value.data['img'],

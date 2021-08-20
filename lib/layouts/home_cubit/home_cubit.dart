@@ -46,6 +46,8 @@ class HomeCubit extends Cubit<HomeStates> {
 
   String? searchedUserImg;
 
+  String? searchedUsername;
+
   String? sendMessageResponse;
 
   MessageModel? messageModel;
@@ -63,6 +65,7 @@ class HomeCubit extends Cubit<HomeStates> {
 // fetching data from the local database
   late List data;
   late String name;
+  late String username;
   late String userId;
   late String email;
   late String img;
@@ -73,6 +76,7 @@ class HomeCubit extends Cubit<HomeStates> {
     print(data);
     if (data.isNotEmpty) {
       name = data[0]['name'];
+      username = data[0]['username'];
       userId = data[0]['userId'];
       email = data[0]['email'];
       img = data[0]['img'];
@@ -81,6 +85,7 @@ class HomeCubit extends Cubit<HomeStates> {
     return data;
   }
 
+  //
 //fetching searched user data
   void getSearchedUserData({
     required String searchedId,
@@ -96,12 +101,14 @@ class HomeCubit extends Cubit<HomeStates> {
     ).then((value) {
       print(value.data);
       searchedUserImg = value.data['result']['img'];
+      searchedUsername = value.data['result']['username'];
       emit(HomeGetSearchedUserDataSuccessState());
     }).catchError((e) {
       print(e);
       emit(HomeGetSearchedUserDataFailureState());
     });
   }
+
 
 // fetching search when searching in recent screen
   void getSearch(String name) async {
@@ -358,6 +365,7 @@ class HomeCubit extends Cubit<HomeStates> {
       await DatabaseHelper.instance.updateData(
         UserModel(
           name: value.data['result']['name'],
+          username: username,
           userId: userId,
           email: email,
           img: image == null ? img : value.data['result']['img'],

@@ -21,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController nameEditController = TextEditingController();
+  GlobalKey<FormState> _formKey = GlobalKey();
 
   late Future _getPublicMessages;
 
@@ -74,8 +75,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     cubit.name.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 26.0.sp,
+                      fontSize: 24.0.sp,
                       fontFamily: 'Gotham_black',
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: deviceHeight * 0.02),
+                  Text(
+                    cubit.username,
+                    style: TextStyle(
+                      fontSize: 16.0.sp,
+                      fontFamily: 'Arabic',
                       color: Theme.of(context).textTheme.bodyText1!.color,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -86,8 +99,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       await Clipboard.setData(
                         ClipboardData(
-                            text:
-                                'https://serr.netlify/#/u/${cubit.name}/${cubit.userId}'),
+                          text:
+                              'https://serr.netlify/#/u/${cubit.name}/${cubit.userId}',
+                        ),
                       ).then(
                         (value) {
                           Fluttertoast.showToast(
@@ -103,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.bold,
                         height: 1.3.h,
                         letterSpacing: 1.0.w,
-                        fontSize: 12.0.sp,
+                        fontSize: 14.0.sp,
                         color: Theme.of(context).textTheme.bodyText2!.color,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -124,51 +138,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context: context,
                         builder: (BuildContext context) => defaultAlertDialog(
                           context,
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              defaultTextField(
-                                context,
-                                controller: nameEditController,
-                                hintText: localizations.newName,
-                                deviceHeight: deviceHeight,
-                                prefixIcon: Icons.edit,
-                                keyBoardType: TextInputType.name,
-                                validator: (value) {
-                                  return null;
-                                },
-                              ),
-                              SizedBox(height: deviceHeight * 0.01),
-                              if (state is HomeUpdateDataLoadingState)
-                                CircularProgressIndicator(
-                                  color: Theme.of(context).primaryColor,
+                          content: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                defaultTextField(
+                                  context,
+                                  controller: nameEditController,
+                                  hintText: localizations.newName,
+                                  deviceHeight: deviceHeight,
+                                  prefixIcon: Icons.edit,
+                                  keyBoardType: TextInputType.name,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return localizations.validatorU;
+                                    } else {
+                                      return null;
+                                    }
+                                  },
                                 ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  defaultTextButton(
-                                    context: context,
-                                    text: localizations.ok,
-                                    onPressed: () {
-                                      cubit.updateUserData(
-                                        newName: nameEditController.text,
-                                      );
-                                      Navigator.pop(context);
-                                      nameEditController.clear();
-                                    },
+                                SizedBox(height: deviceHeight * 0.01),
+                                if (state is HomeUpdateDataLoadingState)
+                                  CircularProgressIndicator(
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                                  defaultTextButton(
-                                    context: context,
-                                    text: localizations.skip,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      nameEditController.clear();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    defaultTextButton(
+                                      context: context,
+                                      text: localizations.ok,
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          cubit.updateUserData(
+                                            newName: nameEditController.text,
+                                          );
+                                          Navigator.pop(context);
+                                          nameEditController.clear();
+                                        }
+                                      },
+                                    ),
+                                    defaultTextButton(
+                                      context: context,
+                                      text: localizations.skip,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        nameEditController.clear();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -305,7 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return Column(
                             children: [
                               SizedBox(
-                                height: deviceHeight * 0.08,
+                                height: deviceHeight * 0.05,
                               ),
                               Text(
                                 localizations.noPublicMessages,

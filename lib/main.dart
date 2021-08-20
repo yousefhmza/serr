@@ -4,12 +4,14 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:serr_app/l10n/l10n.dart';
+import 'package:serr_app/layouts/ads/ads_cubit.dart';
 import 'package:serr_app/layouts/home_cubit/home_cubit.dart';
 import 'package:serr_app/layouts/home_layout.dart';
 import 'package:serr_app/layouts/locale_cubit/locale_cubit.dart';
@@ -55,6 +57,9 @@ void main() async {
     startScreen = OnBoardingScreen();
   }
 
+  final Future<InitializationStatus> initAd = MobileAds.instance.initialize();
+  final AdCubit adState = AdCubit(initAd);
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -72,6 +77,9 @@ void main() async {
             ..setLocale(
               locale == 'en' ? L10n.all[0] : L10n.all[1],
             ),
+        ),
+        BlocProvider.value(
+          value: adState,
         ),
       ],
       child: MyApp(startScreen),

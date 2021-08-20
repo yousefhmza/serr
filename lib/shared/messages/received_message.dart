@@ -307,6 +307,7 @@ class ReceivedMessage extends StatelessWidget {
                                       .textTheme
                                       .bodyText1!
                                       .fontFamily,
+                                  height: 1.5.h,
                                 ),
                               ),
                             ),
