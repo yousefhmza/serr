@@ -69,7 +69,7 @@ class SentMessage extends StatelessWidget {
                             style: DefaultTextStyle.of(context).style,
                             children: [
                               TextSpan(
-                                text: '${localizations.sentTo}:  ',
+                                text: '${localizations.sentTo} :  ',
                                 style: TextStyle(
                                   fontSize: 14.0.sp,
                                   fontFamily: 'Gotham_thin',

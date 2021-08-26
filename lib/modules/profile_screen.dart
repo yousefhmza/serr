@@ -1,11 +1,7 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,6 +9,7 @@ import 'package:serr_app/layouts/home_cubit/home_cubit.dart';
 import 'package:serr_app/layouts/home_cubit/home_states.dart';
 import 'package:serr_app/shared/components.dart';
 import 'package:serr_app/shared/messages/public_message.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -46,14 +43,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {
         if (state is HomeUpdateDataSuccessState) {
-          Fluttertoast.showToast(msg: state.message);
+          showToast(
+            context,
+            msg: state.message,
+            error: false,
+          );
         }
         if (state is HomeUpdateDataFailureState) {
-          errorToast(context, localizations.error);
+          showToast(
+            context,
+            msg: localizations.error,
+            error: true,
+          );
         }
       },
       builder: (BuildContext context, HomeStates state) {
         HomeCubit cubit = BlocProvider.of<HomeCubit>(context);
+
         return WillPopScope(
           onWillPop: () async {
             Navigator.pop(context);
@@ -65,13 +71,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: deviceHeight * 0.05),
+                  SizedBox(height: deviceHeight * 0.03),
                   CircleAvatar(
                     radius: deviceHeight * 0.12,
                     backgroundColor: Theme.of(context).canvasColor,
                     backgroundImage: NetworkImage(cubit.img),
                   ),
-                  SizedBox(height: deviceHeight * 0.05),
+                  SizedBox(height: deviceHeight * 0.03),
                   Text(
                     cubit.name.toUpperCase(),
                     style: TextStyle(
@@ -88,43 +94,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     cubit.username,
                     style: TextStyle(
                       fontSize: 16.0.sp,
-                      fontFamily: 'Arabic',
+                      fontFamily: 'Gotham_thin',
                       color: Theme.of(context).textTheme.bodyText1!.color,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      await Clipboard.setData(
-                        ClipboardData(
-                          text:
-                              'https://serr.netlify/#/u/${cubit.name}/${cubit.userId}',
-                        ),
-                      ).then(
-                        (value) {
-                          Fluttertoast.showToast(
-                            msg: 'Copied to clipboard',
-                          );
-                        },
-                      );
-                    },
-                    child: Text(
-                      'https://serr.netlify/#/u/${cubit.name}/${cubit.userId}',
-                      style: TextStyle(
-                        fontFamily: 'Gotham_thin',
-                        fontWeight: FontWeight.bold,
-                        height: 1.3.h,
-                        letterSpacing: 1.0.w,
-                        fontSize: 14.0.sp,
-                        color: Theme.of(context).textTheme.bodyText2!.color,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  SizedBox(height: deviceHeight * 0.02),
+                  // TextButton(
+                  //   onPressed: () async {
+                  //     await Clipboard.setData(
+                  //       ClipboardData(
+                  //         text:
+                  //             'https://serr-secret.web.app/#/u/${cubit.name}/${cubit.userId}',
+                  //       ),
+                  //     ).then(
+                  //       (value) {
+                  //         showToast(
+                  //           context,
+                  //           msg: localizations.copied,
+                  //           error: false,
+                  //         );
+                  //       },
+                  //     );
+                  //   },
+                  //   child: Text(
+                  //     'https://serr-secret.web.app/#/u/${cubit.name}/${cubit.userId}',
+                  //     style: TextStyle(
+                  //       fontFamily: 'Gotham_thin',
+                  //       fontWeight: FontWeight.bold,
+                  //       height: 1.3.h,
+                  //       letterSpacing: 1.0.w,
+                  //       fontSize: 14.0.sp,
+                  //       color: Theme.of(context).textTheme.bodyText2!.color,
+                  //     ),
+                  //     overflow: TextOverflow.ellipsis,
+                  //     maxLines: 2,
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  // ),
                   Padding(
                     padding: EdgeInsetsDirectional.only(end: 16.0.w),
                     child: Divider(color: Theme.of(context).dividerColor),
@@ -159,10 +168,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                 ),
                                 SizedBox(height: deviceHeight * 0.01),
-                                if (state is HomeUpdateDataLoadingState)
-                                  CircularProgressIndicator(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -172,11 +177,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       text: localizations.ok,
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {
-                                          cubit.updateUserData(
+                                          FocusScope.of(context).unfocus();
+                                          cubit
+                                              .updateUserData(
+                                            context,
                                             newName: nameEditController.text,
-                                          );
-                                          Navigator.pop(context);
-                                          nameEditController.clear();
+                                          )
+                                              .then((value) {
+                                            Navigator.pop(context);
+                                            nameEditController.clear();
+                                          });
                                         }
                                       },
                                     ),
@@ -228,13 +238,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           listen: true,
                                         ).selectedImage!,
                                       ) as ImageProvider,
-                                backgroundColor: Theme.of(context).primaryColor,
+                                backgroundColor:
+                                    Theme.of(context).cardTheme.color,
                               ),
                               SizedBox(height: deviceHeight * 0.02),
-                              if (state is HomeUpdateDataLoadingState)
-                                CircularProgressIndicator(
-                                  color: Theme.of(context).primaryColor,
-                                ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -267,8 +274,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 text: localizations.upload,
                                 onPressed: () {
                                   if (cubit.selectedImage != null) {
-                                    print('dddddddddddddone');
                                     cubit.updateUserData(
+                                      context,
                                       newName: cubit.name,
                                       image: cubit.selectedImage,
                                     );
@@ -280,6 +287,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       );
+                    },
+                  ),
+                  profileFeature(
+                    context,
+                    text: localizations.copyLink,
+                    icon: Icons.copy,
+                    onTap: () async {
+                      await Clipboard.setData(
+                        ClipboardData(
+                          text:
+                              'https://serr-seccret.web.app/#/u/${cubit.userId}',
+                        ),
+                      ).then(
+                        (value) {
+                          showToast(
+                            context,
+                            msg: localizations.copied,
+                            error: false,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  profileFeature(
+                    context,
+                    text: localizations.shareProfile,
+                    icon: Icons.share,
+                    onTap: () async {
+                      await Share.share(
+                          'https://serr-seccret.web.app/#/u/${cubit.userId}');
                     },
                   ),
                   Padding(
@@ -328,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return Column(
                             children: [
                               SizedBox(
-                                height: deviceHeight * 0.05,
+                                height: deviceHeight * 0.035,
                               ),
                               Text(
                                 localizations.noPublicMessages,

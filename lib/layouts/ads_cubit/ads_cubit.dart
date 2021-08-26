@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:serr_app/layouts/ads/ads_states.dart';
+import 'package:serr_app/layouts/ads_cubit/ads_states.dart';
 
 class AdCubit extends Cubit<AdsStates> {
   Future<InitializationStatus> initialization;
@@ -31,5 +31,22 @@ class AdCubit extends Cubit<AdsStates> {
   BannerAdListener get bannerAdListener => _bannerAdListener;
 
   String get bannerAdUnitId =>
-      Platform.isAndroid ? 'ca-app-pub-3412861167774583/4948766979' : '';
+      Platform.isAndroid ? 'ca-app-pub-3940256099942544/6300978111' : '';
+
+  loadAd() {
+    try {
+      return initialization.then((value) {
+        bannerAd = BannerAd(
+          size: AdSize.fullBanner,
+          adUnitId: bannerAdUnitId,
+          listener: bannerAdListener,
+          request: AdRequest(),
+        )..load();
+        emit(AdBannerLoadedState());
+      });
+    } catch (e) {
+      print(e);
+      emit(AdBannerFailureState());
+    }
+  }
 }

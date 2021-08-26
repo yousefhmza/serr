@@ -45,7 +45,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="serr.netlify.app"
+                    android:host="serr-seccret.web.app"
                     android:scheme="https" />
             </intent-filter>
 

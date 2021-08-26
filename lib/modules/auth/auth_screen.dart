@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -30,9 +29,10 @@ class AuthScreen extends StatelessWidget {
         if (state is AuthLoginFailureState ||
             state is AuthRegisterFailureState ||
             state is AuthGoogleAuthFailureState) {
-          Fluttertoast.showToast(
+          showToast(
+            context,
             msg: localizations.error,
-            backgroundColor: Colors.red,
+            error: true,
           );
         }
         if (state is AuthLoginSuccessState ||
@@ -68,11 +68,11 @@ class AuthScreen extends StatelessWidget {
                 systemOverlayStyle: SystemUiOverlayStyle(
                   statusBarColor: Colors.transparent,
                   statusBarIconBrightness:
-                  BlocProvider.of<ThemeCubit>(context, listen: true)
-                      .themeMode ==
-                      ThemeMode.light
-                      ? Brightness.dark
-                      : Brightness.light,
+                      BlocProvider.of<ThemeCubit>(context, listen: true)
+                                  .themeMode ==
+                              ThemeMode.light
+                          ? Brightness.dark
+                          : Brightness.light,
                 ),
                 actions: [
                   defaultTextButton(
@@ -80,7 +80,7 @@ class AuthScreen extends StatelessWidget {
                     text: localizations.skip,
                     onPressed: () {
                       cubit.authScreenSeen().then(
-                            (value) {
+                        (value) {
                           Navigator.pushReplacement(
                             context,
                             PageTransition(
@@ -187,44 +187,44 @@ class AuthScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: deviceHeight * 0.03),
                                   state is AuthLoginLoadingState ||
-                                      state is AuthRegisterLoadingState ||
-                                      state is AuthGoogleAuthLoadingState
+                                          state is AuthRegisterLoadingState ||
+                                          state is AuthGoogleAuthLoadingState
                                       ? CircularProgressIndicator(
-                                    color: Theme.of(context).primaryColor,
-                                  )
+                                          color: Theme.of(context).primaryColor,
+                                        )
                                       : authButton(
-                                    context,
-                                    onPressed: () {
-                                      if (formKey.currentState!
-                                          .validate()) {
-                                        FocusScope.of(context).unfocus();
+                                          context,
+                                          onPressed: () {
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              FocusScope.of(context).unfocus();
 
-                                        if (cubit.authMode ==
-                                            AuthMode.login) {
-                                          cubit.login(
-                                            context,
-                                            email: emailController.text
-                                                .toLowerCase(),
-                                            password:
-                                            passwordController.text,
-                                          );
-                                        } else {
-                                          cubit.register(
-                                            context,
-                                            username:
-                                            userNameController.text,
-                                            email: emailController.text
-                                                .toLowerCase(),
-                                            password:
-                                            passwordController.text,
-                                          );
-                                        }
-                                      }
-                                    },
-                                    text: cubit.authMode == AuthMode.login
-                                        ? localizations.login
-                                        : localizations.register,
-                                  ),
+                                              if (cubit.authMode ==
+                                                  AuthMode.login) {
+                                                cubit.login(
+                                                  context,
+                                                  email: emailController.text
+                                                      .toLowerCase(),
+                                                  password:
+                                                      passwordController.text,
+                                                );
+                                              } else {
+                                                cubit.register(
+                                                  context,
+                                                  username:
+                                                      userNameController.text,
+                                                  email: emailController.text
+                                                      .toLowerCase(),
+                                                  password:
+                                                      passwordController.text,
+                                                );
+                                              }
+                                            }
+                                          },
+                                          text: cubit.authMode == AuthMode.login
+                                              ? localizations.login
+                                              : localizations.register,
+                                        ),
                                   SizedBox(height: deviceHeight * 0.01),
                                   if (cubit.authMode == AuthMode.login)
                                     setAuthMode(
@@ -244,7 +244,7 @@ class AuthScreen extends StatelessWidget {
                                     children: [
                                       socialMediaAuth(
                                         deviceHeight: deviceHeight,
-                                        img: 'assets/images/gmail.png',
+                                        img: 'assets/images/google.png',
                                         onPressed: () {
                                           cubit.googleSignIn(context);
                                         },
@@ -291,10 +291,10 @@ Widget socialMediaAuth({
     );
 
 Widget setAuthMode(
-    BuildContext context, {
-      required String text,
-      required String buttonText,
-    }) {
+  BuildContext context, {
+  required String text,
+  required String buttonText,
+}) {
   AuthCubit cubit = BlocProvider.of<AuthCubit>(context);
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceAround,

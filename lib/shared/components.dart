@@ -24,11 +24,9 @@ PreferredSize appBar(
           CircleAvatar(
             radius: deviceHeight * 0.031,
             backgroundColor: Theme.of(context).canvasColor,
-            backgroundImage: NetworkImage(
-              cubit.data.isNotEmpty
-                  ? 'https://i.pinimg.com/originals/34/8a/6f/348a6f9ca65d76e43f2bc8df61c831e6.jpg'
-                  : 'https://media.npr.org/assets/img/2020/05/05/gettyimages-693140990_custom-96572767b03e0e649349fdb6d38d649e6ccaed75.jpg',
-            ),
+            backgroundImage: cubit.data.isNotEmpty
+                ? NetworkImage(cubit.img)
+                : AssetImage('assets/images/profPic.jpg') as ImageProvider,
           ),
           SizedBox(
             width: deviceWidth * 0.02,
@@ -60,11 +58,9 @@ SliverAppBar sliverAppBar(
         CircleAvatar(
           radius: deviceHeight * 0.031,
           backgroundColor: Theme.of(context).canvasColor,
-          backgroundImage: NetworkImage(
-            cubit.data.isNotEmpty
-                ? 'https://i.pinimg.com/originals/34/8a/6f/348a6f9ca65d76e43f2bc8df61c831e6.jpg'
-                : 'https://media.npr.org/assets/img/2020/05/05/gettyimages-693140990_custom-96572767b03e0e649349fdb6d38d649e6ccaed75.jpg',
-          ),
+          backgroundImage: cubit.data.isNotEmpty
+              ? NetworkImage(cubit.img)
+              : AssetImage('assets/images/profPic.jpg') as ImageProvider,
         ),
         SizedBox(
           width: deviceWidth * 0.02,
@@ -99,7 +95,7 @@ PreferredSize profileAppbar(BuildContext context) {
         onPressed: () {
           Navigator.pop(context);
           BlocProvider.of<HomeCubit>(context).publicMessageModel = null;
-          BlocProvider.of<HomeCubit>(context).searchedUserImg = null;
+          BlocProvider.of<HomeCubit>(context).searchedUserModel = null;
         },
         icon: Icon(
           Icons.arrow_back_outlined,
@@ -144,7 +140,7 @@ Widget profileFeature(
   BuildContext context, {
   required String text,
   required IconData icon,
-  Function()? onTap,
+  required Function() onTap,
 }) =>
     ListTile(
       onTap: onTap,
@@ -155,7 +151,7 @@ Widget profileFeature(
         //size: 28.0,
       ),
       title: Text(
-        text.toUpperCase(),
+        text,
         style: TextStyle(
           fontSize: 16.0.sp,
           fontWeight: FontWeight.bold,
@@ -406,14 +402,16 @@ Widget defaultAlertDialog(
       content: content,
     );
 
-Future<bool?> errorToast(
-  BuildContext context,
-  String msg,
-) =>
+Future<bool?> showToast(
+  BuildContext context, {
+  required String msg,
+  required bool error,
+}) =>
     Fluttertoast.showToast(
       msg: msg,
       textColor: Colors.white,
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor:
+          error ? Theme.of(context).primaryColor : Colors.grey.shade400,
     );
 
 Future editComment(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:serr_app/layouts/ads_cubit/ads_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -20,13 +21,27 @@ import 'package:serr_app/modules/contact_us_screen.dart';
 import 'package:serr_app/modules/profile_screen.dart';
 import 'package:serr_app/shared/components.dart';
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends StatefulWidget {
+  @override
+  _MoreScreenState createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends State<MoreScreen> {
+  // late Future _loadAd;
+  //
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   final adCubit = BlocProvider.of<AdCubit>(context);
+  //   _loadAd = adCubit.loadAd();
+  // }
 
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
     //double deviceWidth = MediaQuery.of(context).size.width;
     AppLocalizations localizations = AppLocalizations.of(context)!;
+
     List<MoreFeature> features = [
       MoreFeature(
         title: localizations.mfProfile,
@@ -132,9 +147,11 @@ class MoreScreen extends StatelessWidget {
                   enableJavaScript: true,
                   forceWebView: false,
                 )
-              : errorToast(
+              : showToast(
                   context,
-                  'error on launching https://play.google.com/store/apps/details?id=com.azem.sserr',
+                  msg:
+                      'error on launching https://play.google.com/store/apps/details?id=com.azem.sserr',
+                  error: true,
                 );
         },
       ),
@@ -145,6 +162,24 @@ class MoreScreen extends StatelessWidget {
           await Share.share(
             'https://play.google.com/store/apps/details?id=com.azem.sserr',
           );
+        },
+      ),
+      MoreFeature(
+        title: localizations.mfVisitWebsite,
+        icon: Icons.launch,
+        function: () async {
+          await canLaunch('https://serr-seccret.web.app/#/search')
+              ? await launch(
+                  'https://serr-seccret.web.app/#/search',
+                  enableJavaScript: true,
+                  forceWebView: false,
+                )
+              : showToast(
+                  context,
+                  msg:
+                      'error on launching https://serr-seccret.web.app/#/search',
+                  error: true,
+                );
         },
       ),
       MoreFeature(
@@ -170,9 +205,11 @@ class MoreScreen extends StatelessWidget {
                   enableJavaScript: true,
                   forceWebView: true,
                 )
-              : errorToast(
+              : showToast(
                   context,
-                  'error on launching https://serr.flycricket.io/privacy.html',
+                  msg:
+                      'error on launching https://serr.flycricket.io/privacy.html',
+                  error: true,
                 );
         },
       ),
@@ -212,26 +249,30 @@ class MoreScreen extends StatelessWidget {
                           context: context,
                           text: localizations.yes,
                           onPressed: () {
-                            BlocProvider.of<AuthCubit>(context).logout();
+                            BlocProvider.of<AuthCubit>(context)
+                                .logout()
+                                .then((value) {
+                              // to make sure that the messages of the previous user
+                              // don't appear to the next one if they logged in with
+                              // different accounts in the same app lifecycle
+                              BlocProvider.of<HomeCubit>(context).messageModel =
+                                  null;
+                              BlocProvider.of<HomeCubit>(context)
+                                  .sentMessageModel = null;
+                              BlocProvider.of<HomeCubit>(context)
+                                  .favMessageModel = null;
 
-                            // to make sure that the messages of the previous user
-                            // don't appear to the next one if they logged in with
-                            // different accounts in the same app lifecycle
-                            BlocProvider.of<HomeCubit>(context).messageModel =
-                                null;
-                            BlocProvider.of<HomeCubit>(context)
-                                .sentMessageModel = null;
-                            BlocProvider.of<HomeCubit>(context)
-                                .favMessageModel = null;
+                              BlocProvider.of<HomeCubit>(context).getUserData();
 
-                            Navigator.pop(context);
-                            Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                child: MyApp(HomeLayout()),
-                                type: PageTransitionType.fade,
-                              ),
-                            );
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  child: MyApp(HomeLayout()),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                            });
                           },
                         ),
                         defaultTextButton(
@@ -248,8 +289,10 @@ class MoreScreen extends StatelessWidget {
               ),
             );
           } else {
-            Fluttertoast.showToast(
+            showToast(
+              context,
               msg: localizations.notRegistered,
+              error: false,
             );
           }
         },
@@ -259,8 +302,10 @@ class MoreScreen extends StatelessWidget {
     return BlocConsumer<AuthCubit, AuthStates>(
       listener: (BuildContext context, AuthStates state) {
         if (state is AuthLogoutFailureState) {
-          Fluttertoast.showToast(
+          showToast(
+            context,
             msg: localizations.error,
+            error: true,
           );
         }
       },
@@ -271,20 +316,20 @@ class MoreScreen extends StatelessWidget {
             context,
             text: localizations.title3,
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                if (!BlocProvider.of<AuthCubit>(context, listen: true).isLogin)
-                  authAlert(
-                    context,
-                    localizations.noFeatures,
-                  ),
-                Padding(
+          body: Column(
+            children: [
+              if (!BlocProvider.of<AuthCubit>(context, listen: true).isLogin)
+                authAlert(
+                  context,
+                  localizations.noFeatures,
+                ),
+              Expanded(
+                child: Padding(
                   padding: EdgeInsets.only(top: 8.0.h),
                   child: ListView.separated(
                     padding: EdgeInsets.symmetric(vertical: 0.0.h),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
+                    // physics: NeverScrollableScrollPhysics(),
+                    // shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) =>
                         featureItem(
                       context,
@@ -299,8 +344,27 @@ class MoreScreen extends StatelessWidget {
                     },
                   ),
                 ),
-              ],
-            ),
+              ),
+              //the Ad
+              // if (BlocProvider.of<AdCubit>(context, listen: true).bannerAd ==
+              //     null)
+              //   SizedBox(
+              //     height: deviceHeight * 0.08,
+              //   )
+              // else
+              //   FutureBuilder(
+              //     future: _loadAd,
+              //     builder: (context, snapshot) {
+              //       return Container(
+              //         height: deviceHeight * 0.08,
+              //         child: AdWidget(
+              //           ad: BlocProvider.of<AdCubit>(context, listen: true)
+              //               .bannerAd!,
+              //         ),
+              //       );
+              //     },
+              //   ),
+            ],
           ),
         );
       },

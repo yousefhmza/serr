@@ -27,13 +27,25 @@ class ReceivedMessage extends StatelessWidget {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {
         if (state is HomeSetFavFailureState) {
-          errorToast(context, localizations.setFavError);
+          showToast(
+            context,
+            msg: localizations.setFavError,
+            error: true,
+          );
         }
         if (state is HomeDeleteMessageFailureState) {
-          errorToast(context, localizations.deleteMessageError);
+          showToast(
+            context,
+            msg: localizations.deleteMessageError,
+            error: true,
+          );
         }
         if (state is HomeCommentFailureState) {
-          errorToast(context, localizations.commentError);
+          showToast(
+            context,
+            msg: localizations.commentError,
+            error: true,
+          );
         }
       },
       builder: (BuildContext context, HomeStates state) {

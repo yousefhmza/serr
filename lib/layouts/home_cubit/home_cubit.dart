@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:serr_app/layouts/home_cubit/home_states.dart';
@@ -13,6 +14,7 @@ import 'package:serr_app/models/messages_models/message_model.dart';
 import 'package:serr_app/models/messages_models/public_message_model.dart';
 import 'package:serr_app/models/search_model.dart';
 import 'package:serr_app/models/messages_models/sent_message_model.dart';
+import 'package:serr_app/models/searched_user_model.dart';
 import 'package:serr_app/models/user_model.dart';
 import 'package:serr_app/modules/basic_screens/messages_screen.dart';
 import 'package:serr_app/modules/basic_screens/more_screen.dart';
@@ -44,15 +46,13 @@ class HomeCubit extends Cubit<HomeStates> {
 
   SearchModel? searchModel;
 
-  String? searchedUserImg;
-
-  String? searchedUsername;
-
   String? sendMessageResponse;
 
   MessageModel? messageModel;
 
   SentMessageModel? sentMessageModel;
+
+  SearchedUserModel? searchedUserModel;
 
   PublicMessageModel? publicMessageModel;
 
@@ -82,6 +82,7 @@ class HomeCubit extends Cubit<HomeStates> {
       img = data[0]['img'];
       token = data[0]['token'];
     }
+    emit(HomeGetLocalUserDataSuccessState());
     return data;
   }
 
@@ -89,26 +90,24 @@ class HomeCubit extends Cubit<HomeStates> {
 //fetching searched user data
   void getSearchedUserData({
     required String searchedId,
-    required String searchedName,
+    // required String searchedName,
   }) async {
     emit(HomeGetSearchedUserDataLoadingState());
     DioHelper.getData(
       url: 'user',
       query: {
         "fbid": searchedId,
-        "name": searchedName,
+        // "name": searchedName,
       },
     ).then((value) {
       print(value.data);
-      searchedUserImg = value.data['result']['img'];
-      searchedUsername = value.data['result']['username'];
+      searchedUserModel = SearchedUserModel.fromJson(value.data);
       emit(HomeGetSearchedUserDataSuccessState());
     }).catchError((e) {
       print(e);
       emit(HomeGetSearchedUserDataFailureState());
     });
   }
-
 
 // fetching search when searching in recent screen
   void getSearch(String name) async {
@@ -345,20 +344,26 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
 //updating user data
-  void updateUserData({
+  Future updateUserData(
+    BuildContext context, {
     required String newName,
     File? image,
   }) async {
     FormData formData = FormData.fromMap({
       'name': newName,
-      'img': image == null ? '' : await MultipartFile.fromFile(image.path),
+      'img': image == null
+          ? ''
+          : await MultipartFile.fromFile(
+              image.path,
+              contentType: new MediaType('image', 'jpg'),
+            ),
       'fbid': userId,
     });
 
     emit(HomeUpdateDataLoadingState());
 
     await DioHelper.patchData(
-      url: '/user',
+      url: 'user',
       data: formData,
     ).then((value) async {
       print(value.data);
@@ -375,6 +380,8 @@ class HomeCubit extends Cubit<HomeStates> {
 
       name = value.data['result']['name'];
       img = image == null ? img : value.data['result']['img'];
+
+      selectedImage = null;
 
       emit(HomeUpdateDataSuccessState(value.data['message']));
     }).catchError((e) {

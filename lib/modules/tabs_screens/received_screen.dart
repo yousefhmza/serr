@@ -33,7 +33,11 @@ class _ReceivedScreenState extends State<ReceivedScreen> {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {
         if (state is HomeGetMessagesFailureState) {
-          errorToast(context, localizations.error);
+          showToast(
+            context,
+            msg: localizations.error,
+            error: true,
+          );
         }
       },
       builder: (BuildContext context, HomeStates state) {
@@ -42,56 +46,56 @@ class _ReceivedScreenState extends State<ReceivedScreen> {
           key: const PageStorageKey('ReceivedScreen'),
           body: BlocProvider.of<AuthCubit>(context, listen: true).isLogin
               ? RefreshIndicator(
-            color: Theme.of(context).primaryColor,
-            onRefresh: () async {
-              await cubit.getMessages();
-            },
-            child: FutureBuilder(
-              future: _getMessages,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (cubit.messageModel == null) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  );
-                } else {
-                  if (cubit.messageModel!.result.isEmpty) {
-                    // put the text in SingleChildScrollView cuz refreshIndicator
-                    // works only on scrollable widgets
-                    return Center(
-                      child: SingleChildScrollView(
-                        child: Text(
-                          localizations.noReceivedMessages,
-                          style: TextStyle(
-                            fontSize: 22.0.sp,
-                            fontFamily: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .fontFamily,
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .color,
+                  color: Theme.of(context).primaryColor,
+                  onRefresh: () async {
+                    await cubit.getMessages();
+                  },
+                  child: FutureBuilder(
+                    future: _getMessages,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (cubit.messageModel == null) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor,
                           ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: cubit.messageModel!.result.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          ReceivedMessage(index),
-                    );
-                  }
-                }
-              },
-            ),
-          )
+                        );
+                      } else {
+                        if (cubit.messageModel!.result.isEmpty) {
+                          // put the text in SingleChildScrollView cuz refreshIndicator
+                          // works only on scrollable widgets
+                          return Center(
+                            child: SingleChildScrollView(
+                              child: Text(
+                                localizations.noReceivedMessages,
+                                style: TextStyle(
+                                  fontSize: 22.0.sp,
+                                  fontFamily: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .fontFamily,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .color,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: cubit.messageModel!.result.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                ReceivedMessage(index),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                )
               : authAlert(
-            context,
-            localizations.noMessages,
-          ),
+                  context,
+                  localizations.noMessages,
+                ),
         );
       },
     );

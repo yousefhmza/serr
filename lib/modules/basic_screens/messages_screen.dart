@@ -10,10 +10,16 @@ import 'package:serr_app/shared/components.dart';
 final PageStorageBucket tabsBucket = PageStorageBucket();
 
 class MessagesScreen extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     //double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
+
+    List<String> list = ['one', 'two', 'three'];
+    String string = list.join('%20');
+    print(string);
 
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {},
@@ -67,11 +73,11 @@ class MessagesScreen extends StatelessWidget {
   }
 
   Widget tabBarItem(
-      BuildContext context, {
-        required IconData icon,
-        required String text,
-        required double space,
-      }) =>
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    required double space,
+  }) =>
       Tab(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -6,6 +6,8 @@ class HomeSetBNBIndexState extends HomeStates {}
 
 class HomeSetBsState extends HomeStates {}
 
+class HomeGetLocalUserDataSuccessState extends HomeStates {}
+
 // search states
 
 class HomeSearchLoadingState extends HomeStates {}

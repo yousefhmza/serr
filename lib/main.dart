@@ -11,7 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:serr_app/l10n/l10n.dart';
-import 'package:serr_app/layouts/ads/ads_cubit.dart';
+import 'package:serr_app/layouts/ads_cubit/ads_cubit.dart';
 import 'package:serr_app/layouts/home_cubit/home_cubit.dart';
 import 'package:serr_app/layouts/home_layout.dart';
 import 'package:serr_app/layouts/locale_cubit/locale_cubit.dart';
@@ -39,8 +39,7 @@ void main() async {
 
   await CacheHelper.init();
   bool onBoardingSeen = await CacheHelper.getData('onBoardingSeen') ?? false;
-  bool isAuthScreenSeen =
-      await CacheHelper.getData('isAuthScreenSeen') ?? false;
+  bool isAuthScreenSeen = await CacheHelper.getData('isAuthScreenSeen') ?? false;
   bool isDark = await CacheHelper.getData('isDark') ?? false;
   String locale = await CacheHelper.getData('locale') ?? 'ar';
 
@@ -58,7 +57,7 @@ void main() async {
   }
 
   final Future<InitializationStatus> initAd = MobileAds.instance.initialize();
-  final AdCubit adState = AdCubit(initAd);
+  //final AdCubit adState = AdCubit(initAd);
 
   runApp(
     MultiBlocProvider(
@@ -78,8 +77,8 @@ void main() async {
               locale == 'en' ? L10n.all[0] : L10n.all[1],
             ),
         ),
-        BlocProvider.value(
-          value: adState,
+        BlocProvider(
+          create: (BuildContext context) => AdCubit(initAd),
         ),
       ],
       child: MyApp(startScreen),

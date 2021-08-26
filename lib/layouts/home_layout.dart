@@ -62,8 +62,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             context,
             MaterialPageRoute(
               builder: (_) => LandingScreen(
-                id: urlSegments[6],
-                name: urlSegments[5],
+                id: urlSegments[5],
               ),
             ),
           );
@@ -92,12 +91,12 @@ class _HomeLayoutState extends State<HomeLayout> {
         print(url);
         List<String> urlSegments = url.split('/');
         print(urlSegments);
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => LandingScreen(
-              id: urlSegments[6],
-              name: urlSegments[5],
+              id: urlSegments[5],
             ),
           ),
         );

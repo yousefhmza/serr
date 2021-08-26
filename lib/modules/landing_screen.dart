@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:serr_app/layouts/home_cubit/home_cubit.dart';
@@ -11,14 +10,9 @@ import 'package:serr_app/shared/messages/public_message.dart';
 
 class LandingScreen extends StatefulWidget {
   final String? id;
-  final String? name;
-
-  // final String? img;
 
   LandingScreen({
     required this.id,
-    required this.name,
-    // required this.img,
   });
 
   @override
@@ -41,7 +35,7 @@ class _LandingScreenState extends State<LandingScreen> {
     });
     BlocProvider.of<HomeCubit>(context).getSearchedUserData(
       searchedId: widget.id!,
-      searchedName: widget.name!,
+      //searchedName: widget.name!,
     );
     super.initState();
   }
@@ -56,15 +50,16 @@ class _LandingScreenState extends State<LandingScreen> {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {
         if (state is HomeSendMessageSuccessState) {
-          Fluttertoast.showToast(
+          showToast(
+            context,
             msg: state.message,
-            fontSize: 16.sp,
+            error: false,
           );
         } else if (state is HomeSendMessageFailureState) {
-          Fluttertoast.showToast(
+          showToast(
+            context,
             msg: localizations.error,
-            fontSize: 16.sp,
-            backgroundColor: Theme.of(context).errorColor,
+            error: true,
           );
         }
       },
@@ -74,7 +69,7 @@ class _LandingScreenState extends State<LandingScreen> {
           onWillPop: () async {
             Navigator.pop(context);
             cubit.publicMessageModel = null;
-            cubit.searchedUserImg = null;
+            cubit.searchedUserModel = null;
             return true;
           },
           child: Scaffold(
@@ -87,20 +82,22 @@ class _LandingScreenState extends State<LandingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: deviceHeight * 0.05,
+                      height: deviceHeight * 0.03,
                     ),
                     CircleAvatar(
                       radius: deviceHeight * 0.12,
                       backgroundColor: Theme.of(context).canvasColor,
-                      backgroundImage: cubit.searchedUserImg == null
+                      backgroundImage: cubit.searchedUserModel == null
                           ? null
-                          : NetworkImage(cubit.searchedUserImg!),
+                          : NetworkImage(cubit.searchedUserModel!.img!),
                     ),
                     SizedBox(
-                      height: deviceHeight * 0.05,
+                      height: deviceHeight * 0.03,
                     ),
                     Text(
-                      widget.name!.toUpperCase(),
+                      cubit.searchedUserModel == null
+                          ? ''
+                          : cubit.searchedUserModel!.name!.toUpperCase(),
                       style: TextStyle(
                         fontSize: 24.0.sp,
                         fontFamily: 'Gotham_black',
@@ -114,13 +111,12 @@ class _LandingScreenState extends State<LandingScreen> {
                       height: deviceHeight * 0.02,
                     ),
                     Text(
-                      cubit.searchedUserImg == null
+                      cubit.searchedUserModel == null
                           ? ''
-                          : cubit.searchedUsername!,
+                          : cubit.searchedUserModel!.username!,
                       style: TextStyle(
-                        fontSize: 14.0.sp,
-                        fontFamily: 'Arabic',
-                        fontWeight: FontWeight.normal,
+                        fontSize: 16.0.sp,
+                        fontFamily: 'Gotham_thin',
                         color: Theme.of(context).textTheme.bodyText1!.color,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -178,7 +174,7 @@ class _LandingScreenState extends State<LandingScreen> {
                             return Column(
                               children: [
                                 SizedBox(
-                                  height: deviceHeight * 0.15,
+                                  height: deviceHeight * 0.16,
                                 ),
                                 Text(
                                   localizations.noPublicMessagesLS,

@@ -36,7 +36,11 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
     return BlocConsumer<HomeCubit, HomeStates>(
       listener: (BuildContext context, HomeStates state) {
         if (state is HomeGetFavMessagesFailureState) {
-          errorToast(context, localizations.error);
+          showToast(
+            context,
+            msg: localizations.error,
+            error: true,
+          );
         }
       },
       builder: (BuildContext context, HomeStates state) {
@@ -45,56 +49,56 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
           key: const PageStorageKey('FavouriteScreen'),
           body: BlocProvider.of<AuthCubit>(context, listen: true).isLogin
               ? RefreshIndicator(
-            color: Theme.of(context).primaryColor,
-            onRefresh: () async {
-              await cubit.getFavMessages();
-            },
-            child: FutureBuilder(
-              future: _getFavMessages,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (cubit.favMessageModel == null) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  );
-                } else {
-                  if (cubit.favMessageModel!.result.isEmpty) {
-                    // put the text in SingleChildScrollView cuz refreshIndicator
-                    // works only on scrollable widgets
-                    return Center(
-                      child: SingleChildScrollView(
-                        child: Text(
-                          localizations.noFavouriteMessages,
-                          style: TextStyle(
-                            fontSize: 22.0.sp,
-                            fontFamily: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .fontFamily,
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .color,
+                  color: Theme.of(context).primaryColor,
+                  onRefresh: () async {
+                    await cubit.getFavMessages();
+                  },
+                  child: FutureBuilder(
+                    future: _getFavMessages,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (cubit.favMessageModel == null) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor,
                           ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: cubit.favMessageModel!.result.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          FavMessage(index),
-                    );
-                  }
-                }
-              },
-            ),
-          )
+                        );
+                      } else {
+                        if (cubit.favMessageModel!.result.isEmpty) {
+                          // put the text in SingleChildScrollView cuz refreshIndicator
+                          // works only on scrollable widgets
+                          return Center(
+                            child: SingleChildScrollView(
+                              child: Text(
+                                localizations.noFavouriteMessages,
+                                style: TextStyle(
+                                  fontSize: 22.0.sp,
+                                  fontFamily: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .fontFamily,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .color,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: cubit.favMessageModel!.result.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                FavMessage(index),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                )
               : authAlert(
-            context,
-            localizations.noMessages,
-          ),
+                  context,
+                  localizations.noMessages,
+                ),
         );
       },
     );

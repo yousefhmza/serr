@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:serr_app/layouts/ads/ads_cubit.dart';
+import 'package:serr_app/layouts/ads_cubit/ads_cubit.dart';
 
 import 'package:serr_app/layouts/home_cubit/home_cubit.dart';
 import 'package:serr_app/layouts/home_cubit/home_states.dart';
@@ -19,26 +19,18 @@ class RecentScreen extends StatefulWidget {
 
 class _RecentScreenState extends State<RecentScreen> {
   TextEditingController searchController = TextEditingController();
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final adCubit = BlocProvider.of<AdCubit>(context, listen: true);
-    adCubit.initialization.then((status) {
-      print(adCubit.bannerAdUnitId);
-      adCubit.bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: adCubit.bannerAdUnitId,
-        listener: adCubit.bannerAdListener,
-        request: AdRequest(),
-      )..load();
-    });
-  }
+  // late Future _loadAd;
+  //
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   final adCubit = BlocProvider.of<AdCubit>(context);
+  //   _loadAd = adCubit.loadAd();
+  // }
 
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
-    print(deviceHeight);
     //double deviceWidth = MediaQuery.of(context).size.width;
 
     return BlocConsumer<HomeCubit, HomeStates>(
@@ -107,19 +99,24 @@ class _RecentScreenState extends State<RecentScreen> {
                 ),
               ),
               //the Ad
-              if (BlocProvider.of<AdCubit>(context, listen: true).bannerAd ==
-                  null)
-                SizedBox(
-                  height: deviceHeight * 0.08,
-                )
-              else
-                Container(
-                  height: deviceHeight * 0.08,
-                  child: AdWidget(
-                    ad: BlocProvider.of<AdCubit>(context, listen: true)
-                        .bannerAd!,
-                  ),
-                )
+              // if (BlocProvider.of<AdCubit>(context, listen: true).bannerAd ==
+              //     null)
+              //   SizedBox(
+              //     height: deviceHeight * 0.08,
+              //   )
+              // else
+              //   FutureBuilder(
+              //     future: _loadAd,
+              //     builder: (context, snapshot) {
+              //       return Container(
+              //         height: deviceHeight * 0.08,
+              //         child: AdWidget(
+              //           ad: BlocProvider.of<AdCubit>(context, listen: true)
+              //               .bannerAd!,
+              //         ),
+              //       );
+              //     },
+              //   ),
             ],
           ),
         );
@@ -139,7 +136,7 @@ class _RecentScreenState extends State<RecentScreen> {
             PageTransition(
               child: LandingScreen(
                 id: cubit.searchModel!.result[index].id!,
-                name: cubit.searchModel!.result[index].name!,
+                //name: cubit.searchModel!.result[index].name!,
               ),
               type: PageTransitionType.fade,
             ),

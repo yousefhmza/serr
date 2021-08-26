@@ -12,7 +12,11 @@ void _launchUrl(BuildContext context, String url) async {
           enableJavaScript: true,
           forceWebView: false,
         )
-      : errorToast(context, 'error on launching $url');
+      : showToast(
+          context,
+          msg: 'error on launching $url',
+          error: true,
+        );
 }
 
 class ContactUsScreen extends StatelessWidget {

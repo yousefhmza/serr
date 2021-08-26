@@ -215,7 +215,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 24.0.sp,
+              fontSize: 22.0.sp,
               fontFamily: 'Arabic',
               color: Theme.of(context).textTheme.bodyText1!.color,
             ),
@@ -227,7 +227,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 20.0.sp,
+              fontSize: 18.0.sp,
               height: 1.5.h,
               fontFamily: 'Arabic',
               color: Theme.of(context).textTheme.bodyText1!.color,

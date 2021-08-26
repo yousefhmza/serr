@@ -39,6 +39,7 @@
     "mfRateTheApp" : "Rate The App",
     "mfShareTheApp" : "Share The App",
     "mfPrivacyPolicy" : "Privacy policy",
+    "mfVisitWebsite" : "Visit our website",
     "mfLogOut" : "Log out",
     "noProfile" : "You are not registered! Please register to access your profile.",
     "noFeatures" : "You are not registered! Please register to use all app features.",
@@ -48,8 +49,8 @@
     "notRegistered" : "You are not registered already!",
     "googleSignIn" : "Sign up with google",
 
-    "editName" : "edit name",
-    "editProfilePic" : "edit profile picture",
+    "editName" : "Edit name",
+    "editProfilePic" : "Edit profile picture",
     "publicMessages" : "Public messages",
     "noPublicMessages" : "You have no public messages!",
     "noPublicMessagesLS" : "This user doesn't have public messages!",
@@ -81,6 +82,10 @@
     "feedback" : "Send us your feedback and our team will get back to you within 24 hours.",
     "facebook" : "Serr on facebook",
     "insta" : "Serr on instagram",
-    "gmail" : "Contact us on gmail"
+    "gmail" : "Contact us on gmail",
+
+    "copied" : "Copied to clipboard",
+    "copyLink" : "Copy profile link",
+    "shareProfile" : "Share your profile with others"
 
 }
